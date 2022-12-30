@@ -1,0 +1,33 @@
+--[[ Test ]]
+print ("Hello")
+
+--[[ Library ]]
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
+
+--[[ Gui ]]
+local MainGUI = Mercury:Create{
+    Name = "Mercury Test BALLER",
+    Size = UDim2.fromOffset(600, 400),
+    Theme = Mercury.Themes.Dark,
+    Link = "https://github.com/deeeity/mercury-lib",
+    Draggable = true
+}
+
+--[[ Dragger ]]
+local Dragger = Mercury:CreateDragger(MainGUI)
+Dragger.Parent = MainGUI
+
+--[[ Tabs ]]
+local MainTab = MainGUI:Tab{
+	Name = "New Tab",
+	Icon = "rbxassetid://11962975383"
+}
+
+--[[ Buttons]]
+MainTab:AddButton{
+	Name = "Fly Gui",
+	Callback = function()
+      		loadstring(game:HttpGet("https://pastebin.com/raw/gNb0mYab"))()
+      		print("button pressed")
+  	end    
+}
