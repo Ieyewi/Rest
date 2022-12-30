@@ -16,50 +16,41 @@ local MainGUI = Mercury:Create{
     Name = "Mercury",
     Size = UDim2.fromOffset(600, 400),
     Theme = Mercury.Themes.Dark,
-     Link = "https://github.com/philissmart/Mercury-lib",
-     Draggable = true
-}
+     Link = "https://github.com/philissmart/Mercury-Lib",
+
 
 --[[ Make the GUI draggable on mobile devices ]]
- local function MakeDraggable(topbarobject, object)
-	local Dragging = nil
-	local DragInput = nil
-	local DragStart = nil
-	local StartPosition = nil
+    local dragStart = nil
+    local dragDelta = nil
 
-	local function Update(input)
-		local Delta = input.Position - DragStart
-		local pos =
-			UDim2.new(
-				StartPosition.X.Scale,
-				StartPosition.X.Offset + Delta.X,
-				StartPosition.Y.Scale,
-				StartPosition.Y.Offset + Delta.Y
-			)
-		object.Position = pos
-	end
+    MainGUI.InputBegan:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            dragStart = inputObject.Position
+        end
+    end)
 
-	topbarobject.InputBegan:Connect(
-		function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-				Dragging = true
-				DragStart = input.Position
-				StartPosition = object.Position
+    MainGUI.InputChanged:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            local newPos = Vector2.new(inputObject.Position.X, inputObject.Position.Y)
+            dragDelta = newPos - dragStart
+            MainGUI:TweenPosition(UDim2.new(0, MainGUI.Position.X.Offset + dragDelta.X, 0, MainGUI.Position.Y.Offset + dragDelta.Y), "Out", "Quad", 0.1, true)
+        end
+    end)
 
-				input.Changed:Connect(
-					function()
-						if input.UserInputState == Enum.UserInputState.End then
-							Dragging = false
-						end
-					end
+    MainGUI.InputEnded:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            dragStart = nil
+            dragDelta = Vector2.new(0, 0)
+        end
+    end)
 
-    --[[ Tabs ]]
+--[[ Tabs ]]
     local MainTab = MainGUI:Tab{
         Name = "New Tab",
         Icon = "rbxassetid://8569322835"
     }
 
-    --[[ Buttons]]
+--[[ Buttons]]
     MainTab:AddButton{
         Name = "Fly Gui",
         Callback = function()
@@ -72,4 +63,6 @@ local MainGUI = Mercury:Create{
             end
         end    
     }
+end
+end
 end
