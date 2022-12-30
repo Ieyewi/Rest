@@ -1,33 +1,68 @@
 --[[ Test ]]
-print ("Hello")
+print("Hello")
+
+--[[ Loadstring ]]
+local mercuryLib = game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua")
+local mercurySuccess, mercuryError = pcall(loadstring(mercuryLib))
+if not mercurySuccess then
+    print("Error loading Mercury library: " .. tostring(mercuryError))
+else
 
 --[[ Library ]]
-local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
+local Mercury = mercuryError
 
 --[[ Gui ]]
 local MainGUI = Mercury:Create{
-    Name = "Mercury Test BALLER",
+    Name = "Mercury",
     Size = UDim2.fromOffset(600, 400),
     Theme = Mercury.Themes.Dark,
-    Link = "https://github.com/deeeity/mercury-lib",
-    Draggable = true
+     Link = "https://github.com/philissmart/Mercury-lib",
+     Draggable = true
 }
 
---[[ Dragger ]]
-local Dragger = Mercury:CreateDragger(MainGUI)
-Dragger.Parent = MainGUI
+--[[ Make the GUI draggable on mobile devices ]]
+    local dragStart = nil
+    local dragDelta = nil
 
---[[ Tabs ]]
-local MainTab = MainGUI:Tab{
-	Name = "New Tab",
-	Icon = "rbxassetid://11962975383"
-}
+    MainGUI.InputBegan:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            dragStart = inputObject.Position
+        end
+    end)
 
---[[ Buttons]]
-MainTab:AddButton{
-	Name = "Fly Gui",
-	Callback = function()
-      		loadstring(game:HttpGet("https://pastebin.com/raw/gNb0mYab"))()
-      		print("button pressed")
-  	end    
-}
+    MainGUI.InputChanged:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            local newPos = Vector2.new(inputObject.Position.X, inputObject.Position.Y)
+            dragDelta = newPos - dragStart
+            MainGUI:TweenPosition(UDim2.new(0, MainGUI.Position.X.Offset + dragDelta.X, 0, MainGUI.Position.Y.Offset + dragDelta.Y), "Out", "Quad", 0.1, true)
+            dragStart = newPos
+        end
+    end)
+
+    MainGUI.InputEnded:Connect(function(inputObject)
+        if inputObject.UserInputType == Enum.UserInputType.Touch then
+            dragStart = nil
+            dragDelta = nil
+        end
+    end)
+
+    --[[ Tabs ]]
+    local MainTab = MainGUI:Tab{
+        Name = "New Tab",
+        Icon = "rbxassetid://8569322835"
+    }
+
+    --[[ Buttons]]
+    MainTab:AddButton{
+        Name = "Fly Gui",
+        Callback = function()
+            local flyGuiScript = game:HttpGet("https://pastebin.com/raw/gNb0mYab")
+            local flyGuiSuccess, flyGuiError = pcall(loadstring(flyGuiScript))
+            if not flyGuiSuccess then
+                print("Error loading Fly Gui script: " .. tostring(flyGuiError))
+            else
+                print("Button pressed")
+            end
+        end    
+    }
+end
